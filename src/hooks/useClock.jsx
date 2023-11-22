@@ -18,56 +18,15 @@ const timeZone_offset = {
 };
 
 function useClock(lable,timeZone, offset=0) {
-  const [state, seState] = useState({ ...init });
-
-
-    useEffect(()=>{
-        let utc = new Date();
-
-        const localOffset = utc.getTimezoneOffset()
-        utc = addMinutes(utc,localOffset)
-        console.log(utc);
-
-        if(timeZone){
-            if(timeZone==="PST" || timeZone==="EST"){
-              offset = timeZone_offset[timeZone] 
-            }
-        }else{
-            offset = utc.getTimezoneOffset()
-            
-        }
-        utc = addMinutes(utc, offset)
-        console.log( lable,utc.toLocaleString());
-
-    },[timeZone,offset])
+  const [state, seState ] = useState({ ...init });
 
 
 
 
 
-
-
-//   useEffect(() => {
-//     let utc = new Date();
-//     if (timeZone) {
-//       if (timeZone === 'PST' || timeZone === 'EST') {
-//         const localOffset = timeZone_offset[timeZone] ?? offset;
-//         utc = addMinutes(utc, localOffset);
-//       }
-//     } else {
-//       const offset = utc.getTimezoneOffset();
-//       utc = addMinutes(utc, offset);
-//     }
-
-//     seState({
-//       ...state,
-//       date_utc: utc,
-
-//     });
-//   }, []);
 
   return {
-    clock: state,
+    clock : state
   };
 }
 
