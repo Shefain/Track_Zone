@@ -26,7 +26,7 @@ function useClock(lable, timeZone, offset = 0) {
     utc = addMinutes(utc,localOffset)
 
     if(timeZone){
-      if(timeZone !== "UTC" && timeZone === "PST" ||timeZone === "EST" ){
+      if(timeZone === "PST" ||timeZone === "EST" ){
         offset = timeZone_offset[timeZone]
         
       }
