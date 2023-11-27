@@ -25,9 +25,11 @@ function useClock(lable, timeZone, offset = 0) {
     const localOffset = utc.getTimezoneOffset()
     utc = addMinutes(utc,localOffset)
 
-    if(timeZone && timeZone !== "UTC" && timeZone === "PST" ||timeZone === "EST" ){
-      offset = timeZone_offset[timeZone]
-      
+    if(timeZone){
+      if(timeZone !== "UTC" && timeZone === "PST" ||timeZone === "EST" ){
+        offset = timeZone_offset[timeZone]
+        
+      }
     }
     utc = addMinutes(utc, offset)
     console.log(lable, utc.toLocaleString());
