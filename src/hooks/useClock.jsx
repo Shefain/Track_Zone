@@ -13,31 +13,49 @@ const init = {
 };
 
 const timeZone_offset = {
-  EST: 7 * 60,
-  PST: 4 * 60,
+  PST: -8 * 60,
+  EST: -5 * 60,
+  EDT: -5 * 60,
+  BST: 1 * 60,
+  MST: -6 * 60,
 };
 
 function useClock(lable, timeZone, offset = 0) {
-  const [state, seState] = useState({ ...init });
+  const [state, setState] = useState({ ...init });
+  const [utcTime, setUtcTime] = useState(null);
 
-  useEffect(()=>{
-    let utc = new Date();
-    const localOffset = utc.getTimezoneOffset()
-    utc = addMinutes(utc,localOffset)
+  useEffect(() => {
+    const local_time = new Date();
+    const local_offset = local_time.getTimezoneOffset();
+    const utc_time = addMinutes(local_time, local_offset);
+    setUtcTime(utc_time);
+  }, []);
 
-    if(timeZone){
-      if(timeZone === "PST" ||timeZone === "EST" ){
-        offset = timeZone_offset[timeZone]
-        
-      }
+  useEffect(() => {
+    if ((utcTime !== null) && timeZone) {
+      offset = timeZone_offset[timeZone] ?? offset;
+      const new_time = addMinutes(utcTime, offset);
+
+      setState({
+        ...state,
+        date_utc: utcTime,
+        date: new_time,
+      
+      });
+
+    } else {
+      
+      setState({
+        ...state,
+        date_utc: utcTime,
+        date: utcTime,
+      });
+    
     }
-    utc = addMinutes(utc, offset)
-    console.log(lable, utc.toLocaleString());
-  },[timeZone,offset])
+  }, [utcTime ,timeZone , offset]);
 
   return {
     clock: state,
   };
 }
-
 export default useClock;
