@@ -1,5 +1,5 @@
-import { addMinutes } from 'date-fns';
 import { useState, useEffect } from 'react';
+import { addMinutes } from 'date-fns';
 
 const init = {
   id: '',
@@ -13,43 +13,44 @@ const init = {
 };
 
 const TIMEZONE_OFFSET = {
-  PST: -8 * 60,
-  EST: -5 * 60,
+  PST: -7 * 60,
+  EST: -4 * 60,
   EDT: -4 * 60,
   BST: 1 * 60,
-  MST: -7 * 60,
+  MST: -6 * 60,
 };
 
-const useClock = (timezone, offset = 0) => {
-  const [state, setState] = useState(() => init);
+function useClock(timezone, offset = 0) {
+  const [state, setState] = useState({ ...init });
   const [utc, setUtc] = useState(null);
 
   useEffect(() => {
-    const d = new Date();
+    let d = new Date();
     const localOffset = d.getTimezoneOffset();
-    const adjustedDate = addMinutes(d, localOffset);
-    setUtc(adjustedDate);
+    d = addMinutes(d, localOffset);
+    setUtc(d);
   }, []);
 
   useEffect(() => {
-    if (utc !== null && timezone && TIMEZONE_OFFSET[timezone] !== undefined) {
-      setState(prevState => ({
-        ...prevState,
+    if (utc !== null && timezone) {
+      offset = TIMEZONE_OFFSET[timezone] ?? offset;
+      const newUtc = addMinutes(utc, offset);
+      setState({
+        ...state,
         date_utc: utc,
-        date: addMinutes(utc, TIMEZONE_OFFSET[timezone] + offset),
-      }));
+        date: newUtc,
+      });
     } else {
-      setState(prevState => ({
-        ...prevState,
+      setState({
+        ...state,
         date_utc: utc,
         date: utc,
-      }));
+      });
     }
-  }, [utc, timezone, offset]);
+  }, [utc]);
 
   return {
     clock: state,
   };
-};
-
+}
 export default useClock;
