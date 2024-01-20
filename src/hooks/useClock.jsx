@@ -24,12 +24,15 @@ function useClock(timezone, offset = 0) {
   const [state, setState] = useState({ ...init });
   const [utc, setUtc] = useState(null);
 
+
   useEffect(() => {
     let d = new Date();
     const localOffset = d.getTimezoneOffset();
     d = addMinutes(d, localOffset);
     setUtc(d);
   }, []);
+
+
 
   useEffect(() => {
     if (utc !== null && timezone) {
