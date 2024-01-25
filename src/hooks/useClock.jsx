@@ -1,59 +1,49 @@
-import { useState, useEffect } from 'react';
 import { addMinutes } from 'date-fns';
-
-const init = {
-  id: '',
-  title: '',
-  timezone: {
-    type: '',
-    offset: '',
-  },
-  date_utc: null,
-  date: null,
-};
+import { useEffect, useState } from 'react';
 
 const TIMEZONE_OFFSET = {
-  PST: -7 * 60,
-  EST: -4 * 60,
-  EDT: -4 * 60,
-  BST: 1 * 60,
-  MST: -6 * 60,
+    PST: -7 * 60,
+    EST: -4 * 60,
+    EDT: -4 * 60,
+    BST: 1 * 60,
+    MST: -6 * 60,
 };
 
-function useClock(timezone, offset = 0) {
-  const [state, setState] = useState({ ...init });
-  const [utc, setUtc] = useState(null);
+const useClock = (timezone, offset) => {
+    const [localDate, setLocalDate] = useState(null);
+    const [localTimezone, setLocalTimezone] = useState(null);
+    const [localOffset, setLocalOffset] = useState(0);
+    const [utc, setUtc] = useState(null);
 
+    useEffect(() => {
+        let d = new Date();
+        const lo = d.getTimezoneOffset();
+        d = addMinutes(d, lo);
+        setUtc(d);
+        setLocalOffset(lo);
+    }, []);
 
-  useEffect(() => {
-    let d = new Date();
-    const localOffset = d.getTimezoneOffset();
-    d = addMinutes(d, localOffset);
-    setUtc(d);
-  }, []);
+    useEffect(() => {
+        if (utc !== null) {
+            if (timezone) {
+                offset = TIMEZONE_OFFSET[timezone] ?? offset;
+                const newUtc = addMinutes(utc, offset);
+                setLocalDate(newUtc);
+            } else {
+                const newUtc = addMinutes(utc, -localOffset);
+                const dateStrArr = newUtc.toUTCString().split(' ');
+                setLocalDate(newUtc);
+                setLocalTimezone(dateStrArr.pop());
+            }
+        }
+    }, [utc, timezone, offset]);
 
+    return {
+        date: localDate,
+        dateUtc: utc,
+        offset: offset || -localOffset,
+        timezone: timezone || localTimezone,
+    };
+};
 
-
-  useEffect(() => {
-    if (utc !== null && timezone) {
-      offset = TIMEZONE_OFFSET[timezone] ?? offset;
-      const newUtc = addMinutes(utc, offset);
-      setState({
-        ...state,
-        date_utc: utc,
-        date: newUtc,
-      });
-    } else {
-      setState({
-        ...state,
-        date_utc: utc,
-        date: utc,
-      });
-    }
-  }, [utc]);
-
-  return {
-    clock: state,
-  };
-}
 export default useClock;
